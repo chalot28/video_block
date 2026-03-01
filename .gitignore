@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# WebView2 Evergreen Bootstrapper (binary – tải tự động lúc build)
+/installer/MicrosoftEdgeWebview2Setup.exe

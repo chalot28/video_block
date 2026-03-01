@@ -1,14 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:video_block/main.dart';
 
 void main() {
-  testWidgets('Video app renders source actions', (WidgetTester tester) async {
-    await tester.pumpWidget(const VideoBlockApp());
+  testWidgets('App boots and shows browser shell', (WidgetTester tester) async {
+    await tester.pumpWidget(const MiniBrowserApp());
     await tester.pump();
 
-    expect(find.text('Load URL'), findsOneWidget);
-    expect(find.text('Pick File'), findsOneWidget);
-    expect(find.text('Ad-block'), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Tab mới'), findsOneWidget);
   });
 }

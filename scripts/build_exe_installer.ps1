@@ -2,10 +2,32 @@ $ErrorActionPreference = 'Stop'
 
 Set-Location "D:\video_block"
 
-Write-Host "[1/3] Building Flutter Windows release..."
+Write-Host "[1/4] Building Flutter Windows release..."
 flutter build windows --release
 
-Write-Host "[2/3] Compiling EXE installer with Inno Setup..."
+# ─── Bước 2: Tải WebView2 Evergreen Bootstrapper ────────────────────────────
+# flutter_inappwebview dùng Microsoft Edge WebView2 Runtime làm engine.
+# Máy cài đặt có thể chưa có WebView2 → installer phải tự cài nó.
+# Bootstrapper (~1.8 MB) tải Runtime từ Microsoft CDN lúc setup chạy.
+# ─────────────────────────────────────────────────────────────────────────────
+Write-Host "[2/4] Ensuring WebView2 Runtime bootstrapper is present..."
+$webview2Dest = "D:\video_block\installer\MicrosoftEdgeWebview2Setup.exe"
+if (!(Test-Path $webview2Dest)) {
+    Write-Host "  → Downloading WebView2 Evergreen Bootstrapper from Microsoft..."
+    try {
+        Invoke-WebRequest `
+            -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" `
+            -OutFile $webview2Dest `
+            -UseBasicParsing
+        Write-Host "  → Downloaded: $webview2Dest"
+    } catch {
+        throw "Không tải được WebView2 bootstrapper. Kiểm tra kết nối mạng hoặc tải thủ công từ:`n  https://developer.microsoft.com/en-us/microsoft-edge/webview2/`nvà đặt vào: $webview2Dest"
+    }
+} else {
+    Write-Host "  → Already present: $webview2Dest"
+}
+
+Write-Host "[3/4] Compiling EXE installer with Inno Setup..."
 $iscc = $null
 
 try {
@@ -61,4 +83,4 @@ if (!(Test-Path $setupPath)) {
 	throw "Không tìm thấy file installer: $setupPath"
 }
 
-Write-Host "[3/3] Done. Installer created at: D:\video_block\build\installer\video_block_setup.exe"
+Write-Host "[4/4] Done. Installer created at: D:\video_block\build\installer\video_block_setup.exe"
