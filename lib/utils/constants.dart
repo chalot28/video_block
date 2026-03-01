@@ -22,4 +22,13 @@ class AppConstants {
     'prebid',
     'tracker',
   ];
+
+  static const List<String> videoHostAllowList = [
+    'youtube.com',
+    'youtu.be',
+    'googlevideo.com',
+    'vimeo.com',
+    'player.vimeo.com',
+    'flutter.github.io',
+  ];
 }

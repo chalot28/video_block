@@ -1,8 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
 import '../utils/constants.dart';
 
 class AdBlockService {
@@ -18,6 +13,14 @@ class AdBlockService {
     final host = uri.host.toLowerCase();
     final path = uri.path.toLowerCase();
 
+    final isAllowListed = AppConstants.videoHostAllowList.any(
+      (domain) => host == domain || host.endsWith('.$domain'),
+    );
+
+    if (isAllowListed) {
+      return false;
+    }
+
     final blockedHost = AppConstants.adHostFilters.any(
       (domain) => host == domain || host.endsWith('.$domain'),
     );
@@ -29,26 +32,8 @@ class AdBlockService {
     return AppConstants.adPathKeywords.any(path.contains);
   }
 
-  Future<WebResourceResponse?> interceptRequest(WebResourceRequest request) async {
-    try {
-      if (!enabled) {
-        return null;
-      }
-
-      if (shouldBlockUri(request.url)) {
-        final data = Uint8List.fromList(utf8.encode(''));
-        return WebResourceResponse(
-          contentType: 'text/plain',
-          contentEncoding: 'utf-8',
-          statusCode: 403,
-          reasonPhrase: 'Blocked by ad filter',
-          data: data,
-        );
-      }
-    } catch (_) {
-      return null;
-    }
-
-    return null;
+  bool shouldBlockRequestUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return shouldBlockUri(uri);
   }
 }
